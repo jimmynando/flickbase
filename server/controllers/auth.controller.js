@@ -15,8 +15,26 @@ const authController = {
         .cookie("x-access-token", token)
         .status(httpStatus.CREATED)
         .send({ user, token });
+    } catch (error) {
+      res.status(httpStatus.BAD_REQUEST).send(error.message);
+    }
+  },
+  async signin(req, res, next) {
+    try {
+      const {
+        body: { email, password },
+      } = req;
+      const user = await authService.signInWithEmailAndPassword(
+        email,
+        password
+      );
 
-      res.json(user);
+      const token = await authService.generateAuthToken(user);
+
+      res
+        .cookie("x-access-token", token)
+        .status(httpStatus.CREATED)
+        .send({ user, token });
     } catch (error) {
       res.status(httpStatus.BAD_REQUEST).send(error.message);
     }
