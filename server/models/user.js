@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
 const userSchema = mongoose.Schema({
@@ -62,7 +63,18 @@ userSchema.pre("save", async function (next) {
     const hash = await bcrypt.hash(user.password, salt);
     user.password = hash;
   }
+
+  next();
 });
+
+userSchema.methods.generateAuthToken = function () {
+  const user = this;
+  const userObj = { sub: user._id.toHexString(), email: user.email };
+
+  const token = jwt.sign(userObj, process.env.DB_SECRET, { expiresIn: "1d" });
+
+  return token;
+};
 
 const User = mongoose.model("User", userSchema);
 module.exports = { User };
