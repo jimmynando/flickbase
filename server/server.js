@@ -9,6 +9,8 @@ const mongoSanitize = require("express-mongo-sanitize");
 
 const routes = require("./routes");
 
+const { handleError, convertToApiError } = require("./middlewares/apiError");
+
 const app = express();
 
 const mongoUri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}?retryWrites=true&w=majority`;
@@ -24,6 +26,12 @@ app.use(mongoSanitize());
 
 // ROUTES
 app.use("/api", routes);
+
+// ERROR HANDLING
+app.use(convertToApiError);
+app.use((err, req, res, next) => {
+  handleError(err, res);
+});
 
 const port = process.env.PORT || 3001;
 app.listen(port, () => {
