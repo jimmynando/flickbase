@@ -16,7 +16,7 @@ const authController = {
         .status(httpStatus.CREATED)
         .send({ user, token });
     } catch (error) {
-      res.status(httpStatus.BAD_REQUEST).send(error.message);
+      next(error);
     }
   },
   async signin(req, res, next) {
@@ -36,7 +36,7 @@ const authController = {
         .status(httpStatus.CREATED)
         .send({ user, token });
     } catch (error) {
-      res.status(httpStatus.BAD_REQUEST).send(error.message);
+      next(error);
     }
   },
 };
